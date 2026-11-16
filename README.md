@@ -8,35 +8,44 @@ A full-stack application featuring a **Next.js** frontend and a **Node.js Expres
 garcity/
 ├── frontend/       # Next.js (App Router, JavaScript/JSX, Tailwind CSS)
 ├── backend/        # Node.js + Express API
+├── package.json    # Root runner to start both servers concurrently
 └── README.md
 ```
 
-## Getting Started
+## Running the Application
 
-### 1. Backend Setup
+### Option A: Run Both Together (Recommended)
 
+From the root `garcity` directory, run:
+
+```bash
+npm run dev
+```
+
+This single command launches both:
+- **Backend API**: `http://localhost:5000`
+- **Frontend App**: `http://localhost:3000`
+
+---
+
+### Option B: Run Separately (Two Terminals)
+
+**Terminal 1 (Backend):**
 ```bash
 cd backend
-npm install
 npm run dev
 ```
 
-The backend server runs on `http://localhost:5000`.
-
-- Health check: `http://localhost:5000/api/health`
-- Sample API: `http://localhost:5000/api/message`
-
-### 2. Frontend Setup
-
+**Terminal 2 (Frontend):**
 ```bash
 cd frontend
-npm install
 npm run dev
 ```
 
-The frontend app runs on `http://localhost:3000`.
+---
 
-## Deployment
+## API Endpoints
 
-- **Frontend (Next.js)**: Deploy on **Vercel** by setting the Root Directory to `frontend`.
-- **Backend (Node.js)**: Deploy on **Render**, **Railway**, or similar by setting the Root Directory to `backend`.
+- Root: `http://localhost:5000/`
+- Health check: `http://localhost:5000/api/health`
+- Sample message: `http://localhost:5000/api/message`

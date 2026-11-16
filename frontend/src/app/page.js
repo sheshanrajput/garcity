@@ -9,25 +9,35 @@ export default function Home() {
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
-  useEffect(() => {
-    async function checkBackend() {
-      try {
-        const res = await fetch(`${backendUrl}/api/message`);
-        if (res.ok) {
-          const data = await res.json();
-          setBackendStatus("Online");
-          setBackendMessage(data.message || "Connected successfully!");
-        } else {
-          setBackendStatus("Offline / Unreachable");
-        }
-      } catch (err) {
-        setBackendStatus("Offline");
-        setBackendMessage("Make sure the backend is running on port 5000 (`npm run dev` in backend/).");
-      } finally {
-        setLoading(false);
+  const checkBackend = async () => {
+    setLoading(true);
+    setBackendStatus("Checking...");
+    try {
+      const res = await fetch(`${backendUrl}/api/message`, {
+        cache: "no-store"
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBackendStatus("Online");
+        setBackendMessage(data.message || "Connected successfully!");
+      } else {
+        setBackendStatus("Error");
+        setBackendMessage(`Server returned HTTP ${res.status}`);
       }
+    } catch (err) {
+      console.error("Backend connection error:", err);
+      setBackendStatus("Offline");
+      setBackendMessage(
+        "Could not reach backend on " +
+          backendUrl +
+          ". Make sure 'npm run dev' is running in backend/ and not stopped."
+      );
+    } finally {
+      setLoading(false);
     }
+  };
 
+  useEffect(() => {
     checkBackend();
   }, [backendUrl]);
 
@@ -76,9 +86,18 @@ export default function Home() {
 
         {/* Live Backend Connection Card */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 backdrop-blur shadow-xl">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-3">
-            Backend API Response
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+              Backend API Response
+            </h3>
+            <button
+              onClick={checkBackend}
+              disabled={loading}
+              className="text-xs px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition disabled:opacity-50 cursor-pointer"
+            >
+              {loading ? "Checking..." : "Retry Connection"}
+            </button>
+          </div>
           <div className="flex items-start gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800/80 font-mono text-sm">
             <span className="text-indigo-400 font-bold">&gt;</span>
             <span className={backendStatus === "Online" ? "text-emerald-400" : "text-amber-400"}>
